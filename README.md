@@ -31,15 +31,15 @@ A continuación se detallan tanto el modelo de entidades, como el diagrama de sec
 
 ```mermaid
 classDiagram
-	class InventoryItem {
-		+long Id
-		+string Barcode
-		+string Name
-		+string Description
-		+long Units
-		+DateTime ExpiryDate
-		+string Location
-	}
+class InventoryItem {
+	+long Id
+	+string Barcode
+	+string Name
+	+string Description
+	+long Units
+	+DateTime ExpiryDate
+	+string Location
+}
 ```
 
 Con este modelo se pretende exponer la posibilidad de realizar operaciones __CRUD__ tanto por el identificador único (Id), como a través del código de barras (Barcode) o el nombre (Name) del elemento.
@@ -54,54 +54,58 @@ A continucación se presenta el detalle del diagrama de secuencias de la _API_, r
 
 ```mermaid
 sequenceDiagram
-	participant Client as RESTClient
-	participant API as InventoryAPI
-	participant SQL as SQLite
+participant Client as RESTClient
+participant API as InventoryAPI
+participant SQL as SQLite
 	
-	Note over Client,API: Create Item
-	Client-xAPI: POST
-	API->+SQL: Insert(IventoryItem)
-	SQL-->-API: Id
-	alt Status: Ok
-		API--xClient: IventoryItem
-	else Status: Error
-		API--xClient: Error
+Note over Client,API: Create Item
+Client-xAPI: POST
+API->+SQL: Insert(IventoryItem)
+SQL-->-API: Id
+alt Status: Ok
+	API--xClient: IventoryItem
+else Status: Error
+	API--xClient: Error
+end
 
-	Note over Client,API: Read Item
-	Client-xAPI: GET
-	API->+SQL: Select(Id,Barcode,Name)
-	SQL-->-API: Item
-	alt Status: Ok
-		API--xClient: IventoryItem
-	else Status: Error
-		API--xClient: Error
+Note over Client,API: Read Item
+Client-xAPI: GET
+API->+SQL: Select(Id,Barcode,Name)
+SQL-->-API: Item
+alt Status: Ok
+	API--xClient: IventoryItem
+else Status: Error
+	API--xClient: Error
+end
 
-	Note over Client,API: Update Item
-	Client-xAPI: PUT
-	API->+SQL: Update(IventoryItem)
-	SQL-->-API: Void
-	alt Status: Ok
-		API--xClient: Status 200
-	else Status: Error
-		API--xClient: Error
+Note over Client,API: Update Item
+Client-xAPI: PUT
+API->+SQL: Update(IventoryItem)
+SQL-->-API: Void
+alt Status: Ok
+	API--xClient: Status 200
+else Status: Error
+	API--xClient: Error
+end
 
-	Note over Client,API: Delete Item
-	Client-xAPI: DELETE
-	API->+SQL: Delete(Id)
-	SQL-->-API: Void
-	alt Status: Ok
-		API--xClient: IventoryItem
-	else Status: Error
-		API--xClient: Error
+Note over Client,API: Delete Item
+Client-xAPI: DELETE
+API->+SQL: Delete(Id)
+SQL-->-API: Void
+alt Status: Ok
+	API--xClient: IventoryItem
+else Status: Error
+	API--xClient: Error
+end
 
-	Note over Client,API: Item Extracted Notifications
-	Client--xAPI: SSE Subscription
-	opt Item Extracted
-		API--xClient: Extraction Event
-	end
-	opt Item Expired
-		API--xClient: Expiry Event
-	end
+Note over Client,API: Item Extracted Notifications
+Client--xAPI: SSE Subscription
+opt Item Extracted
+	API--xClient: Extraction Event
+end
+opt Item Expired
+	API--xClient: Expiry Event
+end
 ```
 
 [Volver](#índice)
