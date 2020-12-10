@@ -1,28 +1,123 @@
 # Goal Systems - Inventory Management API
 
+Documento técnico de una API REST para la _Gestión de Inventario_, según requisitos proporcionados.
+
 ## Índice
 
 ## Requisitos
 
-1. Añadir elemento al inventario
-2. Sacar un elemento del inventario
-3. Notificar que un elemento se ha sacado del inventario
-4. Notificar cuando un elemento caduca
+Se debe porveer de una solución basada en el entorno __.Net Framework__, concretamente desarrolla con __C#__. La solución debe publicar una _API REST_, ofreciendo las siguientes funciones:
+
+- Añadir elemento al inventario
+- Sacar un elemento del inventario
+- Notificar que un elemento se ha sacado del inventario
+- Notificar cuando un elemento caduca
  
 [Volver](#índice)
 
 ---
 
-## Requerimientos
+## Documentación
 
-Instalar .Net Core 3.1.x
-Instalar las herramientas de EntityFrameworkCore
+Entre las diferentes versiones de __.Net Framework__, es preferible utilizar la versión __.Net Core 3.1__, por modernidad y portabilidad. 
+Dado que la _API_ debe interactuar con un origen de datos, presumiblemente relacional, se ha optado por incorporar _EntityFramework Core_ a la solución, concretamente la específica para _SQLite_, por simplicidad y portabilidad.
+Además, dado que la _API_ es susceptible de ser publicada en una red abierta, se ha implementado un sencillo mecanismo de autenticación estándar utilizando _JSON Web Token_. 
+La aplicación no prevee la asignación de roles, por lo que no se han implementado medidas de autorización a nivel de recursos.
+Pare gestionar las notificaciones requeridas, se ha escogido la mecánica de los _Server Sent Events_, ya que se trata de un canal de comunicación unidireccional del servidor al cliente.
+
+A continuación se detallan tanto el modelo de entidades, como el diagrama de secuencia de la _API_.
+
+### Modelo
+
+```mermaid
+classDiagram
+	class InventoryItem {
+		+long Id
+		+string Barcode
+		+string Name
+		+string Description
+		+long Units
+		+DateTime ExpiryDate
+		+string Location
+	}
+```
+
+Con este modelo se pretende exponer la posibilidad de realizar operaciones __CRUD__ tanto por el identificador único (Id), como a través del código de barras (Barcode) o el nombre (Name) del elemento.
+Además, se han añadido un campo para describir el elemento (Description), aunque no es un valor requerido, así como el número de unidades existentes (Units), la fecha de caducidad (ExpiryDate) y la ubicación del elemento (Location).
+Éste último campo refleja la necesidad de conocer la ubicación del elemento, como por ejemplo: la ciudad, el almaciés, el pasillo, la estatería, etc. Para mantener la sencillez de la solución, es un campo de texto libre, no requerido.
+
+### Diagrama de secuencia
+
+A continucación se presenta el detalle del diagrama de secuencias de la _API_, relativa a los recursos publicados, así como a su interacción con la base de datos.
+
+> Nota: Las notificaciones al cliente se realizan a travér de __SSE__ (_Server Sent Events_).
+
+```mermaid
+sequenceDiagram
+	participant Client as RESTClient
+	participant API as InventoryAPI
+	participant SQL as SQLite
+	
+	Note over Client,API: Create Item
+	Client-xAPI: POST
+	API->+SQL: Insert(IventoryItem)
+	SQL-->-API: Id
+	alt Status: Ok
+		API--xClient: IventoryItem
+	else Status: Error
+		API--xClient: Error
+
+	Note over Client,API: Read Item
+	Client-xAPI: GET
+	API->+SQL: Select(Id,Barcode,Name)
+	SQL-->-API: Item
+	alt Status: Ok
+		API--xClient: IventoryItem
+	else Status: Error
+		API--xClient: Error
+
+	Note over Client,API: Update Item
+	Client-xAPI: PUT
+	API->+SQL: Update(IventoryItem)
+	SQL-->-API: Void
+	alt Status: Ok
+		API--xClient: Status 200
+	else Status: Error
+		API--xClient: Error
+
+	Note over Client,API: Delete Item
+	Client-xAPI: DELETE
+	API->+SQL: Delete(Id)
+	SQL-->-API: Void
+	alt Status: Ok
+		API--xClient: IventoryItem
+	else Status: Error
+		API--xClient: Error
+
+	Note over Client,API: Item Extracted Notifications
+	Client--xAPI: SSE Subscription
+	opt Item Extracted
+		API--xClient: Extraction Event
+	end
+	opt Item Expired
+		API--xClient: Expiry Event
+	end
+```
+
+[Volver](#índice)
+
+---
+
+## Requerimientos de software
+
+- Instalar .Net Core 3.1.x
+- Instalar las herramientas de EntityFrameworkCore
 
 ```shell
 dotnet tool install --global dotnet-ef
 ```
 
-Actualizar las herramientas de EntityFrameworkCore
+- Actualizar las herramientas de EntityFrameworkCore
 
 ```shell
 dotnet tool update --global dotnet-ef
@@ -32,13 +127,14 @@ dotnet tool update --global dotnet-ef
 
 > Nota: Todos los comando debe ejecutarse en el directorio `GoalSytemsAPI`, no en el raíz.
 
-Listado de migraciones
+- Listado de migraciones
 
 ```shell
 dotnet ef migrations list
 ```
 
-Aplicar todas las migraciones
+- Aplicar todas las migraciones
+
 ```shell
 dotnet ef database update
 ```
@@ -69,7 +165,7 @@ dotnet run
 
 ## Swagger
 
-Para relizar pruebas de la API, es necesario acceder a [Swagger UI](https://localhost:5001/swagger). La API está securizada mediante __JWT__ (_JSON Web Token_), por lo que será necesario generar un token para realizar las pruebas.
+Para relizar pruebas de la API, es necesario acceder a [Swagger UI](https://localhost:5001/swagger). La API está securizada mediante __JWT__ (_JSON Web Token_), por lo que será necesario generar un token para poder realizar las pruebas.
  
 [Volver](#índice)
 
