@@ -2,6 +2,8 @@
 
 Documento técnico de una API REST para la _Gestión de Inventario_, según requisitos proporcionados.
 
+> Nota: Para la correcta visualización de este documento, se recomienda instalar la extensión [GitHub+Mermaid](https://github.com/BackMarket/github-mermaid-extension)
+
 ## Índice
 
 ## Requisitos
