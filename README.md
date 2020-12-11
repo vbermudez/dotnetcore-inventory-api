@@ -1,33 +1,33 @@
 # Goal Systems - Inventory Management API
 
-Documento técnico de una API REST para la _Gestión de Inventario_, según requisitos proporcionados.
+Documento ticnico de una API REST para la _GestiÃ³n de Inventario_, segin requisitos proporcionados.
 
-> Nota: Para la correcta visualización de este documento, se recomienda instalar la extensión [GitHub+Mermaid](https://github.com/BackMarket/github-mermaid-extension)
+> Nota: Para la correcta visualizaciÃ³n de este documento, se recomienda instalar la extensiÃ³n [GitHub+Mermaid](https://github.com/BackMarket/github-mermaid-extension)
 
-## Índice
+## Indice
 
 ## Requisitos
 
-Se debe porveer de una solución basada en el entorno __.Net Framework__, concretamente desarrolla con __C#__. La solución debe publicar una _API REST_, ofreciendo las siguientes funciones:
+Se debe porveer de una soluciÃ³n basada en el entorno __.Net Framework__, concretamente desarrolla con __C#__. La soluciÃ³n debe publicar una _API REST_, ofreciendo las siguientes funciones:
 
-- Añadir elemento al inventario
+- Aiadir elemento al inventario
 - Sacar un elemento del inventario
 - Notificar que un elemento se ha sacado del inventario
 - Notificar cuando un elemento caduca
  
-[Volver](#índice)
+[Volver](#indice)
 
 ---
 
-## Documentación
+## DocumentaciÃ³n
 
-Entre las diferentes versiones de __.Net Framework__, es preferible utilizar la versión __.Net Core 3.1__, por modernidad y portabilidad. 
-Dado que la _API_ debe interactuar con un origen de datos, presumiblemente relacional, se ha optado por incorporar _EntityFramework Core_ a la solución, concretamente la específica para _SQLite_, por simplicidad y portabilidad.
-Además, dado que la _API_ es susceptible de ser publicada en una red abierta, se ha implementado un sencillo mecanismo de autenticación estándar utilizando _JSON Web Token_. 
-La aplicación no prevee la asignación de roles, por lo que no se han implementado medidas de autorización a nivel de recursos.
-Pare gestionar las notificaciones requeridas, se ha escogido la mecánica de los _Server Sent Events_, ya que se trata de un canal de comunicación unidireccional del servidor al cliente.
+Entre las diferentes versiones de __.Net Framework__, es preferible utilizar la versiÃ³n __.Net Core 3.1__, por modernidad y portabilidad. 
+Dado que la _API_ debe interactuar con un origen de datos, presumiblemente relacional, se ha optado por incorporar _EntityFramework Core_ a la soluciÃ³n, concretamente la especifica para _SQLite_, por simplicidad y portabilidad.
+Ademis, dado que la _API_ es susceptible de ser publicada en una red abierta, se ha implementado un sencillo mecanismo de autenticaciÃ³n estindar utilizando _JSON Web Token_. 
+La aplicaciÃ³n no prevee la asignaciÃ³n de roles, por lo que no se han implementado medidas de autorizaciÃ³n a nivel de recursos.
+Pare gestionar las notificaciones requeridas, se ha escogido la mecinica de los _Server Sent Events_, ya que se trata de un canal de comunicaciÃ³n unidireccional del servidor al cliente.
 
-A continuación se detallan tanto el modelo de entidades, como el diagrama de secuencia de la _API_.
+A continuaciÃ³n se detallan tanto el modelo de entidades, como el diagrama de secuencia de la _API_.
 
 ### Modelo
 
@@ -44,15 +44,15 @@ class InventoryItem {
 }
 ```
 
-Con este modelo se pretende exponer la posibilidad de realizar operaciones __CRUD__ tanto por el identificador único (Id), como a través del código de barras (Barcode) o el nombre (Name) del elemento.
-Además, se han añadido un campo para describir el elemento (Description), aunque no es un valor requerido, así como el número de unidades existentes (Units), la fecha de caducidad (ExpiryDate) y la ubicación del elemento (Location).
-Éste último campo refleja la necesidad de conocer la ubicación del elemento, como por ejemplo: la ciudad, el almaciés, el pasillo, la estatería, etc. Para mantener la sencillez de la solución, es un campo de texto libre, no requerido.
+Con este modelo se pretende exponer la posibilidad de realizar operaciones __CRUD__ tanto por el identificador inico (Id), como a travis del cidigo de barras (Barcode) o el nombre (Name) del elemento.
+Ademis, se han aiadido un campo para describir el elemento (Description), aunque no es un valor requerido, asi como el nimero de unidades existentes (Units), la fecha de caducidad (ExpiryDate) y la ubicaciÃ³n del elemento (Location).
+iste iltimo campo refleja la necesidad de conocer la ubicaciÃ³n del elemento, como por ejemplo: la ciudad, el almaciÃ³s, el pasillo, la estateria, etc. Para mantener la sencillez de la soluciÃ³n, es un campo de texto libre, no requerido.
 
 ### Diagrama de secuencia
 
-A continucación se presenta el detalle del diagrama de secuencias de la _API_, relativa a los recursos publicados, así como a su interacción con la base de datos.
+A continucaciÃ³n se presenta el detalle del diagrama de secuencias de la _API_, relativa a los recursos publicados, asi como a su interacciÃ³n con la base de datos.
 
-> Nota: Las notificaciones al cliente se realizan a travér de __SSE__ (_Server Sent Events_).
+> Nota: Las notificaciones al cliente se realizan a travir de __SSE__ (_Server Sent Events_).
 
 ```mermaid
 sequenceDiagram
@@ -110,14 +110,16 @@ opt Item Expired
 end
 ```
 
-[Volver](#índice)
+[Volver](#indice)
 
 ---
 
 ## Requerimientos de software
 
-- Instalar .Net Core 3.1.x
-- Instalar las herramientas de EntityFrameworkCore
+- Instalar .Net Core 3.1.x.
+	- Enlace de [descarga](https://dotnet.microsoft.com/download/dotnet-core). 
+
+- Instalar las herramientas de EntityFrameworkCore.
 
 ```shell
 dotnet tool install --global dotnet-ef
@@ -131,7 +133,8 @@ dotnet tool update --global dotnet-ef
 
 ## Aplicar las migraciones de BBDD
 
-> Nota: Todos los comando debe ejecutarse en el directorio `GoalSytemsAPI`, no en el raíz.
+> Nota: Todos los comando debe ejecutarse en el directorio `GoalSytemsAPI`, no en el raiz.
+> Nota: Se han generado varias migraciones a modo de demostraciÃ³n.
 
 - Listado de migraciones
 
@@ -145,35 +148,43 @@ dotnet ef migrations list
 dotnet ef database update
 ```
 
-## Instalación de dependencias
+## InstalaciÃ³n de dependencias
 
-> Nota: Todos los comando debe ejecutarse en el directorio `GoalSytemsAPI`, no en el raíz.
+> Nota: Todos los comando debe ejecutarse en el directorio `GoalSytemsAPI`, no en el raiz.
 
 ```shell
 dotnet restore
 ```
 
-[Volver](#índice)
+[Volver](#indice)
 
 ---
 
-## Ejecución
+## EjecuciÃ³n
 
-> Nota: Todos los comando debe ejecutarse en el directorio `GoalSytemsAPI`, no en el raíz.
+> Nota: Todos los comando debe ejecutarse en el directorio `GoalSytemsAPI`, no en el raiz.
 
 ```shell
 dotnet run
 ```
  
-[Volver](#índice)
+[Volver](#indice)
 
 ---
 
+## Consumir SSE
+
+Usando el comando `curl`, es posible consumir los eventos generados:
+
+```shell
+curl -N -X GET "http://localhost:5000/api/v1/InventoryItems/events" -H "accept: */*" -H  "Authorization: Bearer {JWT-token}"
+```
+
 ## Swagger
 
-Para relizar pruebas de la API, es necesario acceder a [Swagger UI](https://localhost:5001/swagger). La API está securizada mediante __JWT__ (_JSON Web Token_), por lo que será necesario generar un token para poder realizar las pruebas.
+Para relizar pruebas de la API, es necesario acceder a [Swagger UI](https://localhost:5001/swagger). La API esti securizada mediante __JWT__ (_JSON Web Token_), por lo que seri necesario generar un token para poder realizar las pruebas.
  
-[Volver](#índice)
+[Volver](#indice)
 
 ---
 
@@ -188,21 +199,21 @@ curl --request POST \
   --data '{"client_id":"qwyl6ClAbbpEqMXgB5mEZjFPMUyBD5xr","client_secret":"AdXooSgO3FWJ_Yo5e9OWMldF5kfyDTcquVYZRkadHCHe03qu6rPwSw9nbGHkd1z3","audience":"https://goalsystems.inventory.api/","grant_type":"client_credentials"}'
 ```
 
-La respuesta generada, debería ser similar al siguiente _JSON_:
+La respuesta generada, deberia ser similar al siguiente _JSON_:
 
 ```json
-{"access_token":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1CVnR2WngyRkZ0ZjJoRlNrclFfayJ9.eyJpc3MiOiJodHRwczovL3ZiZXJtdWRlei5ldS5hdXRoMC5jb20vIiwic3ViIjoicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHJAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZ29hbHN5c3RlbXMuaW52ZW50b3J5LmFwaS8iLCJpYXQiOjE2MDc1Mzk4MjUsImV4cCI6MTYwNzYyNjIyNSwiYXpwIjoicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.QA5QmiQK7IXrD-Mqqiz59DPLo9MKiIAFmxBueqkdkE89Df2IG-ZUGVnFa1-CU0QqZnM10LEKccXvpY5tqKw2lKhDebuNRJgD4JR1ULb0QsfrxV0sgxi0rLDeH7G69SX_wIQqkwmpyandKJcK_Pa_wmgJdhOZaw6zqjpcXKB_NuO0RurBtGuvBjDRRSpDINcB7VYzM9Khi8UQCzHNqJXpeZn2nvpQ3QPvmwF69FiWN8VCLUoLe9ciDTwmLpS7X4QHA5eUXTUiD0rc3O7pZCwtdsigm-pXiWKbldrmWdFtG4vPZhgPSf4aNRJmxtC1K6D49p7kVuerzX0LrB6Oqyw8Dg","expires_in":86400,"token_type":"Bearer"}
+{"access_token":"eyJhbGciOiJSUzI1NiÃ³sInR5cCI6IkpXVCIsImtpZCI6Ik1CVnR2WngyRkZ0ZjJoRlNrclFfayJ9.eyJpc3MiOiJodHRwczovL3ZiZXJtdWRlei5ldS5hdXRoMC5jb20viÃ³wic3ViÃ³joicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHJAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZ29hbHN5c3RlbXMuaW52ZW50b3J5LmFwaS8iLCJpYXQiOjE2MDc1Mzk4MjUsImV4cCI6MTYwNzYyNjIyNSwiYXpwIjoicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHiÃ³LCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.QA5QmiQK7IXrD-Mqqiz59DPLo9MKiÃ³AFmxBueqkdkE89Df2IG-ZUGVnFa1-CU0QqZnM10LEKccXvpY5tqKw2lKhDebuNRJgD4JR1ULb0QsfrxV0sgxi0rLDeH7G69SX_wIQqkwmpyandKJcK_Pa_wmgJdhOZaw6zqjpcXKB_NuO0RurBtGuvBjDRRSpDINcB7VYzM9Khi8UQCzHNqJXpeZn2nvpQ3QPvmwF69FiWN8VCLUoLe9ciDTwmLpS7X4QHA5eUXTUiD0rc3O7pZCwtdsigm-pXiWKbldrmWdFtG4vPZhgPSf4aNRJmxtC1K6D49p7kVuerzX0LrB6Oqyw8Dg","expires_in":86400,"token_type":"Bearer"}
 ```
 
-Para realizar pruebas con la API, será necesario copiar el valor de `access_token` en el cuadro pertinente del interfaz __Swagger__, tal como sigue:
+Para realizar pruebas con la API, seri necesario copiar el valor de `access_token` en el cuadro pertinente del interfaz __Swagger__, tal como sigue:
 
 ```text
-Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1CVnR2WngyRkZ0ZjJoRlNrclFfayJ9.eyJpc3MiOiJodHRwczovL3ZiZXJtdWRlei5ldS5hdXRoMC5jb20vIiwic3ViIjoicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHJAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZ29hbHN5c3RlbXMuaW52ZW50b3J5LmFwaS8iLCJpYXQiOjE2MDc1Mzk4MjUsImV4cCI6MTYwNzYyNjIyNSwiYXpwIjoicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHIiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.QA5QmiQK7IXrD-Mqqiz59DPLo9MKiIAFmxBueqkdkE89Df2IG-ZUGVnFa1-CU0QqZnM10LEKccXvpY5tqKw2lKhDebuNRJgD4JR1ULb0QsfrxV0sgxi0rLDeH7G69SX_wIQqkwmpyandKJcK_Pa_wmgJdhOZaw6zqjpcXKB_NuO0RurBtGuvBjDRRSpDINcB7VYzM9Khi8UQCzHNqJXpeZn2nvpQ3QPvmwF69FiWN8VCLUoLe9ciDTwmLpS7X4QHA5eUXTUiD0rc3O7pZCwtdsigm-pXiWKbldrmWdFtG4vPZhgPSf4aNRJmxtC1K6D49p7kVuerzX0LrB6Oqyw8Dg
+Bearer eyJhbGciOiJSUzI1NiÃ³sInR5cCI6IkpXVCIsImtpZCI6Ik1CVnR2WngyRkZ0ZjJoRlNrclFfayJ9.eyJpc3MiOiJodHRwczovL3ZiZXJtdWRlei5ldS5hdXRoMC5jb20viÃ³wic3ViÃ³joicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHJAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vZ29hbHN5c3RlbXMuaW52ZW50b3J5LmFwaS8iLCJpYXQiOjE2MDc1Mzk4MjUsImV4cCI6MTYwNzYyNjIyNSwiYXpwIjoicXd5bDZDbEFiYnBFcU1YZ0I1bUVaakZQTVV5QkQ1eHiÃ³LCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.QA5QmiQK7IXrD-Mqqiz59DPLo9MKiÃ³AFmxBueqkdkE89Df2IG-ZUGVnFa1-CU0QqZnM10LEKccXvpY5tqKw2lKhDebuNRJgD4JR1ULb0QsfrxV0sgxi0rLDeH7G69SX_wIQqkwmpyandKJcK_Pa_wmgJdhOZaw6zqjpcXKB_NuO0RurBtGuvBjDRRSpDINcB7VYzM9Khi8UQCzHNqJXpeZn2nvpQ3QPvmwF69FiWN8VCLUoLe9ciDTwmLpS7X4QHA5eUXTUiD0rc3O7pZCwtdsigm-pXiWKbldrmWdFtG4vPZhgPSf4aNRJmxtC1K6D49p7kVuerzX0LrB6Oqyw8Dg
 ```
 
 > Nota: Es importante encabezar el token con la palabra `Bearer`, seguida de un espacio, y luego el _JWT_: `Bearer token`
 
-[Volver](#índice)
+[Volver](#indice)
 
 ---
 
