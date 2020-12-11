@@ -1,14 +1,32 @@
 # Goal Systems - Inventory Management API
 
-Documento ticnico de una API REST para la _Gestión de Inventario_, segin requisitos proporcionados.
+Documento técnico de una API REST para la _Gestión de Inventario_, segin requisitos proporcionados.
 
 > Nota: Para la correcta visualización de este documento, se recomienda instalar la extensión [GitHub+Mermaid](https://github.com/BackMarket/github-mermaid-extension)
 
 ## Indice
 
+- [Goal Systems - Inventory Management API](#goal-systems---inventory-management-api)
+	- [Indice](#indice)
+	- [Requisitos](#requisitos)
+	- [Documentación](#documentación)
+		- [Modelo](#modelo)
+		- [Diagrama de secuencia](#diagrama-de-secuencia)
+		- [Pruebas](#pruebas)
+		- [Recursos en tiempo de ejecución](#recursos-en-tiempo-de-ejecución)
+	- [Requerimientos de software](#requerimientos-de-software)
+	- [Aplicar las migraciones de BBDD](#aplicar-las-migraciones-de-bbdd)
+	- [Instalación de dependencias](#instalación-de-dependencias)
+	- [Ejecución](#ejecución)
+	- [Consumir SSE](#consumir-sse)
+	- [Swagger](#swagger)
+	- [Generar Token JWT](#generar-token-jwt)
+
+---
+
 ## Requisitos
 
-Se debe porveer de una solución basada en el entorno __.Net Framework__, concretamente desarrolla con __C#__. La solución debe publicar una _API REST_, ofreciendo las siguientes funciones:
+Se debe proveer de una solución basada en el entorno __.Net Framework__, concretamente desarrolla con __C#__. La solución debe publicar una _API REST_, ofreciendo las siguientes funciones:
 
 - Aiadir elemento al inventario
 - Sacar un elemento del inventario
@@ -23,9 +41,9 @@ Se debe porveer de una solución basada en el entorno __.Net Framework__, concre
 
 Entre las diferentes versiones de __.Net Framework__, es preferible utilizar la versión __.Net Core 3.1__, por modernidad y portabilidad. 
 Dado que la _API_ debe interactuar con un origen de datos, presumiblemente relacional, se ha optado por incorporar _EntityFramework Core_ a la solución, concretamente la especifica para _SQLite_, por simplicidad y portabilidad.
-Ademis, dado que la _API_ es susceptible de ser publicada en una red abierta, se ha implementado un sencillo mecanismo de autenticación estindar utilizando _JSON Web Token_. 
+Además, dado que la _API_ es susceptible de ser publicada en una red abierta, se ha implementado un sencillo mecanismo de autenticación estándar utilizando _JSON Web Token_. 
 La aplicación no prevee la asignación de roles, por lo que no se han implementado medidas de autorización a nivel de recursos.
-Pare gestionar las notificaciones requeridas, se ha escogido la mecinica de los _Server Sent Events_, ya que se trata de un canal de comunicación unidireccional del servidor al cliente.
+Pare gestionar las notificaciones requeridas, se ha escogido la mecánica de los _Server Sent Events_, ya que se trata de un canal de comunicación unidireccional del servidor al cliente.
 
 A continuación se detallan tanto el modelo de entidades, como el diagrama de secuencia de la _API_.
 
@@ -44,15 +62,19 @@ class InventoryItem {
 }
 ```
 
-Con este modelo se pretende exponer la posibilidad de realizar operaciones __CRUD__ tanto por el identificador inico (Id), como a travis del cidigo de barras (Barcode) o el nombre (Name) del elemento.
-Ademis, se han aiadido un campo para describir el elemento (Description), aunque no es un valor requerido, asi como el nimero de unidades existentes (Units), la fecha de caducidad (ExpiryDate) y la ubicación del elemento (Location).
-iste iltimo campo refleja la necesidad de conocer la ubicación del elemento, como por ejemplo: la ciudad, el almaciós, el pasillo, la estateria, etc. Para mantener la sencillez de la solución, es un campo de texto libre, no requerido.
+Con este modelo se pretende exponer la posibilidad de realizar operaciones __CRUD__. Tanto expone la posibilidad de trabajar con campos como el código de barras (Barcode) o el nombre (Name) del elemento.
+Además, se ha añadido un campo para describir el elemento (Description), aunque no es un valor requerido, asi como el número de unidades existentes (Units), la fecha de caducidad (ExpiryDate) y la ubicación del elemento (Location).
+Éste último campo refleja la necesidad de conocer la ubicación del elemento, como por ejemplo: la ciudad, el almacés, el pasillo, la estateria, etc. Para mantener la sencillez de la solución, es un campo de texto libre, no requerido.
+
+[Volver](#indice)
+
+---
 
 ### Diagrama de secuencia
 
 A continucación se presenta el detalle del diagrama de secuencias de la _API_, relativa a los recursos publicados, asi como a su interacción con la base de datos.
 
-> Nota: Las notificaciones al cliente se realizan a travir de __SSE__ (_Server Sent Events_).
+> Nota: Las notificaciones al cliente se realizan a través de __SSE__ (_Server Sent Events_).
 
 ```mermaid
 sequenceDiagram
@@ -109,6 +131,28 @@ opt Item Expired
 	API--xClient: Expiry Event
 end
 ```
+
+[Volver](#indice)
+
+---
+
+### Pruebas
+
+Se ha optado por implementar la documentación con el estándar _OpenAPI_, usando [Swagger](https://swagger.io/). También se ha incorporado una utilidad, __Swagger UI__, para realizar pruebas con la _API_. 
+Una vez iniciado el proyecto, se puede acceder usando la URL [https://localhost:5001/swagger](https://localhost:5001/swagger). 
+Al tratarse de una API sencilla, además de la facilidad que aporta _Swagger UI_, se ha obviado escribir pruebas unitarias ya que a través de _OpenAPI_ es posible automatizarlas de forma externa y parametrizable.
+En cuanto a las notificaciones, basta con abrir una pestaña del navegador e introducir la _URL_ [https://localhost:5001/api/v1/InventoryItems/events](https://localhost:5001/api/v1/InventoryItems/events). 
+Se ha incorporado un recurso (`/api/v1/InventoryItems/broadcast`) para poder mandar notificaciones arbritarias, a fin de realizar pruebas.
+
+[Volver](#indice)
+
+---
+
+### Recursos en tiempo de ejecución
+
+Se adjunta captura de pantalla del muestreo.
+
+![Muestreo](recursos.png)
 
 [Volver](#indice)
 
@@ -182,7 +226,7 @@ curl -N -X GET "http://localhost:5000/api/v1/InventoryItems/events" -H "accept: 
 
 ## Swagger
 
-Para relizar pruebas de la API, es necesario acceder a [Swagger UI](https://localhost:5001/swagger). La API esti securizada mediante __JWT__ (_JSON Web Token_), por lo que seri necesario generar un token para poder realizar las pruebas.
+Para relizar pruebas de la API, es necesario acceder a [Swagger UI](https://localhost:5001/swagger). La API está securizada mediante __JWT__ (_JSON Web Token_), por lo que será necesario generar un token para poder realizar las pruebas.
  
 [Volver](#indice)
 

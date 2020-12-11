@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GoalSystemsAPI.Models;
+using GoalSystemsAPI.Providers;
+using GoalSystemsAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,9 +39,13 @@ namespace GoalSystemsAPI
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
-                options.Authority = $"https://{Configuration["Auth0:Domain"]}/";
+                options.Authority = Configuration["Auth0:Domain"];
                 options.Audience = Configuration["Auth0:Audience"];
             });
+
+            services.AddSingleton<IMessageRepository, MessageRepository>();
+
+            services.AddHostedService<ExpiryService>();
 
             services.AddControllers();
             
@@ -91,11 +97,6 @@ namespace GoalSystemsAPI
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory Management API V1");
-                /*c.OAuthClientId(Configuration["Auth0:ClientId"]);
-                c.OAuthClientSecret(Configuration["Auth0:ClientSecret"]);
-                c.OAuthAppName(Configuration["Auth0:AppName"]);
-                c.OAuthRealm(Configuration["Auth0:Audience"]);
-                c.OAuth2RedirectUrl(Configuration["Auth0:RedirectUrl"]);*/
             });
 
             app.UseHttpsRedirection();

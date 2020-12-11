@@ -24,5 +24,6 @@ namespace GoalSystemsAPI.Models
         public long Units { get; set; }
         public DateTime ExpiryDate { get; set; }
         public string Location { get; set; }
+        public bool Expired { get; set; }
     }
 }
